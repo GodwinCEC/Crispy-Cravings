@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Order - Crispy Cravings</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍟</text></svg>">
+    </head>
+    <body>
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <a href="index.html"
+                        style="text-decoration: none; color: inherit;">🍟 Crispy
+                        Cravings</a>
+                </h1>
+                <p class="tagline">Place Your Order</p>
+            </div>
+        </header>
+
+        <main>
+            <section class="menu-section">
+                <div class="container">
+                    <div class="form-container">
+                        <div id="selected-item" class="mb-lg"></div>
+
+                        <form id="order-form">
+                            <div class="form-group">
+                                <label for="customer-name"
+                                    class="form-label">Your Names</label>
+                                <input type="text" id="customer-name"
+                                    name="customerName" class="form-input"
+                                    required placeholder="Enter your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone-number"
+                                    class="form-label">Phone Number</label>
+                                <input type="tel" id="phone-number"
+                                    name="phoneNumber" class="form-input"
+                                    required
+                                    placeholder="Enter your phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="hostel-name"
+                                    class="form-label">Hostel</label>
+                                <select id="hostel-name" name="hostelName"
+                                    class="form-select" required
+                                    onchange="toggleCustomHostel()">
+                                    <option value>Select your hostel</option>
+                                    <option value="Unity Hostel">Unity
+                                        Hostel</option>
+                                    <option
+                                        value="Independence Hall">Independence
+                                        Hall</option>
+                                    <option value="Africa Hall">Africa
+                                        Hall</option>
+                                    <option value="Queen Elizabeth Hall">Queen
+                                        Elizabeth Hall</option>
+                                    <option value="KNUST Hall">KNUST
+                                        Hall</option>
+                                    <option value="University Hall">University
+                                        Hall</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="text" id="custom-hostel"
+                                    name="customHostel" class="form-input"
+                                    placeholder="Enter your hostel name"
+                                    style="margin-top: var(--space-xs); display: none;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="room-number" class="form-label">Room
+                                    Number</label>
+                                <input type="text" id="room-number"
+                                    name="roomNumber" class="form-input"
+                                    required
+                                    placeholder="Enter your room number">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="quantity"
+                                    class="form-label">Quantity</label>
+                                <input type="number" id="quantity"
+                                    name="quantity" class="form-input" min="1"
+                                    max="10" value="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="special-instructions"
+                                    class="form-label">Special Instructions
+                                    (Optional)</label>
+                                <textarea id="special-instructions"
+                                    name="specialInstructions"
+                                    class="form-textarea" rows="3"
+                                    placeholder="Any special requests or instructions..."></textarea>
+                            </div>
+
+                            <input type="hidden" id="snack-name"
+                                name="snackName">
+                            <input type="hidden" id="snack-price"
+                                name="snackPrice">
+
+                            <div class="text-center">
+                                <button type="submit" class="submit-btn"
+                                    id="submit-order">Place Order</button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-lg">
+                            <a href="index.html"
+                                style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
+                                Back to Menu</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="success-modal" class="hidden"
+            style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+            <div
+                style="background: white; border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center; max-width: 400px; margin: var(--space-md);">
+                <div
+                    style="font-size: 3rem; margin-bottom: var(--space-md);">🎉</div>
+                <h3
+                    style="font-family: var(--font-display); color: var(--primary-orange); margin-bottom: var(--space-md);">Order
+                    Placed Successfully!</h3>
+                <p style="margin-bottom: var(--space-lg);">We'll prepare your
+                    order and deliver it soon. You'll receive a confirmation
+                    call shortly.</p>
+                <button onclick="window.location.href='index.html'"
+                    class="submit-btn">Back to Menu</button>
+            </div>
+        </div>
+
+        <script
+            src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script
+            src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+        <script src="js/order.js"></script>
+        <script>
+function toggleCustomHostel() {
+    const select = document.getElementById('hostel-name');
+    const input = document.getElementById('custom-hostel');
+    
+    if (select.value === 'Other') {
+        input.style.display = 'block';
+        input.required = true;
+    } else {
+        input.style.display = 'none';
+        input.required = false;
+        input.value = '';
+    }
+}
+</script>
+    </body>
+</html>

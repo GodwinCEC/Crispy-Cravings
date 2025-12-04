@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Placeholder Images</title>
+    <style>
+        .placeholder {
+            width: 400px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+        }
+        .chicken { background: linear-gradient(135deg, #ff6b35, #f7931e); }
+        .fries { background: linear-gradient(135deg, #ffd23f, #ff6b35); }
+        .wings { background: linear-gradient(135deg, #ff4444, #cc1e1e); }
+        .cheese { background: linear-gradient(135deg, #ffa500, #ff7f00); }
+        .nachos { background: linear-gradient(135deg, #32cd32, #228b22); }
+        .burgers { background: linear-gradient(135deg, #8b4513, #654321); }
+        .onion { background: linear-gradient(135deg, #daa520, #b8860b); }
+        .quesadilla { background: linear-gradient(135deg, #ff69b4, #ff1493); }
+        .poppers { background: linear-gradient(135deg, #ff6347, #dc143c); }
+        .brownie { background: linear-gradient(135deg, #8b4513, #654321); }
+    </style>
+</head>
+<body>
+    <h2>Right-click each image and "Save As" to your images/snacks/ folder</h2>
+    
+    <div class="placeholder chicken">
+        <span>Crispy<br>Chicken<br>Strips</span>
+    </div>
+    
+    <div class="placeholder fries">
+        <span>Loaded<br>Cheese<br>Fries</span>
+    </div>
+    
+    <div class="placeholder wings">
+        <span>Buffalo<br>Spicy<br>Wings</span>
+    </div>
+    
+    <div class="placeholder cheese">
+        <span>Mozzarella<br>Sticks</span>
+    </div>
+    
+    <div class="placeholder nachos">
+        <span>Nachos<br>Supreme</span>
+    </div>
+    
+    <div class="placeholder burgers">
+        <span>Mini Burger<br>Sliders</span>
+    </div>
+    
+    <div class="placeholder onion">
+        <span>Crispy<br>Onion<br>Rings</span>
+    </div>
+    
+    <div class="placeholder quesadilla">
+        <span>Chicken<br>Quesadilla</span>
+    </div>
+    
+    <div class="placeholder poppers">
+        <span>Jalapeño<br>Poppers</span>
+    </div>
+    
+    <div class="placeholder brownie">
+        <span>Chocolate<br>Brownie<br>Bites</span>
+    </div>
+
+    <script>
+        // Auto-generate downloadable images
+        document.querySelectorAll('.placeholder').forEach((div, index) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            
+            // Get computed styles
+            const styles = window.getComputedStyle(div);
+            const background = styles.background;
+            
+            // Fill background
+            const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+            // Simple fallback colors
+            const colors = [
+                ['#ff6b35', '#f7931e'], // chicken
+                ['#ffd23f', '#ff6b35'], // fries
+                ['#ff4444', '#cc1e1e'], // wings
+                ['#ffa500', '#ff7f00'], // cheese
+                ['#32cd32', '#228b22'], // nachos
+                ['#8b4513', '#654321'], // burgers
+                ['#daa520', '#b8860b'], // onion
+                ['#ff69b4', '#ff1493'], // quesadilla
+                ['#ff6347', '#dc143c'], // poppers
+                ['#8b4513', '#654321']  // brownie
+            ];
+            
+            gradient.addColorStop(0, colors[index][0]);
+            gradient.addColorStop(1, colors[index][1]);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 300);
+            
+            // Add text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const text = div.textContent.trim();
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            const lineHeight = 35;
+            const startY = 150 - (lines.length - 1) * lineHeight / 2;
+            
+            lines.forEach((line, lineIndex) => {
+                ctx.fillText(line, 200, startY + lineIndex * lineHeight);
+            });
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = div.className.split(' ')[1] + '.png';
+            link.href = canvas.toDataURL();
+            link.textContent = `Download ${link.download}`;
+            link.style.display = 'block';
+            link.style.margin = '10px';
+            div.appendChild(link);
+        });
+    </script>
+</body>
+</html>

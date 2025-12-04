@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Crispy Cravings</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍟</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🔐 Admin Login</h1>
+            <p class="tagline">Enter your credentials to access the dashboard</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="menu-section">
+            <div class="container">
+                <div class="form-container">
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Admin Email</label>
+                            <input type="email" id="email" name="email" class="form-input" required 
+                                   placeholder="Enter your admin email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" required 
+                                   placeholder="Enter your password">
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="submit-btn" id="login-btn">
+                                Sign In
+                            </button>
+                        </div>
+
+                        <div id="error-message" class="hidden" 
+                             style="margin-top: var(--space-md); padding: var(--space-md); 
+                                    background: #f8d7da; color: #721c24; border-radius: var(--radius-md); 
+                                    text-align: center;">
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-lg">
+                        <a href="index.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
+                            ← Back to Menu
+                        </a>
+                    </div>
+
+                    <!-- Demo Credentials -->
+                    <!-- <div style="margin-top: var(--space-xl); padding: var(--space-lg); 
+                                background: var(--light-cream); border-radius: var(--radius-md); 
+                                border-left: 4px solid var(--primary-orange);">
+                        <h4 style="margin-bottom: var(--space-md); color: var(--text-dark);">Demo Admin Credentials:</h4>
+                        <div style="font-family: monospace; font-size: 0.9rem; color: var(--text-light);">
+                            <div>Email: <strong>admin1@crispycravings.com</strong></div>
+                            <div>Password: <strong>admin123</strong></div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Firebase CDN scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Login script -->
+    <script src="js/login.js"></script>
+</body>
+</html>
