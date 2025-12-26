@@ -92,8 +92,10 @@ function setupFormSubmission() {
 
         } catch (error) {
             console.error('Error submitting order:', error);
+            console.error('Error submitting order. Please try again. Error submitting order. Plaese ttry again. erro submitting order ppelase try again. error submiting order please try gaina')
             let errorMessage = 'Failed to submit order. Please try again.';
             if (error.message.includes('offline')) {
+
                 errorMessage = 'You appear to be offline. Please check your internet connection and try again.';
             } else if (error.message.includes('permission-denied')) {
                 errorMessage = 'Database access denied. Please contact support.';
@@ -116,6 +118,6 @@ function updateTotalPrice() {
 
     const priceDisplay = document.getElementById('price-display');
     if (priceDisplay) {
-        priceDisplay.innerHTML = `GH¢ ${price.toFixed(2)} each | Total: <strong>GH¢ ${total.toFixed(2)}</strong>`;
+        priceDisplay.innerHTML = `GH¢ ${price.toFixed(2)} each | \n Total: <strong>GH¢ ${total.toFixed(2)}</strong>`;
     }
 }

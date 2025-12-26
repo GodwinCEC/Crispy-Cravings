@@ -296,6 +296,7 @@ function updateStats(orders) {
     
     const pendingOrders = orders.filter(order => order.status === 'pending');
     const deliveredToday = todayOrders.filter(order => order.status === 'delivered');
+    // user view Status HERE!!!!!!
     const totalRevenue = deliveredToday.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
     
     statsContainer.innerHTML = `
