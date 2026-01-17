@@ -1,92 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Crispy Cravings - Delicious Snacks Delivered</title>
-        <meta name="description"
-            content="Order delicious snacks from Crispy Cravings. Fast delivery to your hostel room!">
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="icon"
-            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍟</text></svg>">
-    </head>
-    <body>
-        <!-- Availability Banner -->
-        <div id="availability-banner" class="availability-banner hidden">
-            Restaurant is currently closed
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crispy Cravings - Glazed Spring Rolls & Samosas</title>
+    <meta name="description" content="Order delicious glazed spring rolls and samosas. Fresh or fried, delivered to your hostel!">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <!-- Availability Banner -->
+    <div id="availability-banner" class="availability-banner hidden">
+        Loading...
+    </div>
+
+    <!-- Hero Carousel Section -->
+    <section class="hero-carousel" id="hero-carousel">
+        <!-- Floating Header (Logo & Cart) -->
+        <div class="floating-header">
+            <div class="header-inner">
+                <a href="index.html" class="logo-container">
+                    <img src="images/brandlogo.png" alt="Crispy Cravings Logo" class="brand-icon">
+                    <h1 class="logo">Crispy Cravings</h1>
+                </a>
+                <!-- Cart Icon -->
+                <a href="cart.html" class="cart-icon" id="cart-icon">
+                    <span class="cart-icon-emoji">🛒</span>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </a>
+            </div>
         </div>
 
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <!-- <a href="index.html"> -->
-                <h1 class="logo">🍟 Crispy Cravings</h1>
-                <!-- </a> -->
-                <p class="tagline">Delicious snacks delivered fresh to your
-                    hostel room</p>
+        <div class="carousel-container" id="carousel-track">
+            <!-- Slide 1: Original Hero Food -->
+            <div class="carousel-slide active">
+                <div class="hero-overlay"></div>
+                <img src="images/hero-food.png" alt="Delicious Spring Rolls and Samosas" class="hero-image">
+                <div class="hero-content">
+                    <h2 class="hero-title">Glazed to Perfection</h2>
+                    <p class="hero-description">Freshly made Spring Rolls and Samosas delivered straight to your doorstep.</p>
+                </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main>
-            <!-- Menu Section -->
-            <section class="menu-section">
-                <div class="container">
-                    <h2 class="section-title">Our Delicious Menu</h2>
-                    <div class="menu-grid" id="menu-container">
-                        <!-- Menu items will be loaded here by JavaScript -->
+            <!-- Slide 2: Regular Crispies -->
+            <div class="carousel-slide">
+                <div class="hero-overlay"></div>
+                <img src="images/regular-crispies.png" alt="Regular Crispies" class="hero-image">
+                <div class="hero-content">
+                    <h2 class="hero-title">Regular Crispies</h2>
+                    <p class="hero-description">The classic taste of fresh veggies in a glazed golden shell.</p>
+                </div>
+            </div>
+
+            <!-- Slide 3: Meat Crunch -->
+            <div class="carousel-slide">
+                <div class="hero-overlay"></div>
+                <img src="images/meat-crunch.png" alt="Meat Crunch" class="hero-image">
+                <div class="hero-content">
+                    <h2 class="hero-title">Meat Crunch</h2>
+                    <p class="hero-description">Pure meat goodness. No veggies, just 100% savory crunch.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel Controls -->
+        <button class="carousel-control prev" onclick="moveSlide(-1)">❮</button>
+        <button class="carousel-control next" onclick="moveSlide(1)">❯</button>
+
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+            <span class="indicator active" onclick="setSlide(0)"></span>
+            <span class="indicator" onclick="setSlide(1)"></span>
+            <span class="indicator" onclick="setSlide(2)"></span>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="regular-tab">
+                    <span class="tab-emoji">🥟</span>
+                    <span class="tab-text">Regular Crispies</span>
+                </button>
+                <button class="tab-btn" data-tab="meat-tab">
+                    <span class="tab-emoji">🍖</span>
+                    <span class="tab-text">Meat Crunch</span>
+                </button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-contents">
+                <!-- Regular Crispies Tab -->
+                <div class="tab-content active" id="regular-tab">
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-emoji">🥟</div>
+                            <div class="product-title">
+                                <h2>Regular Crispies</h2>
+                                <p class="product-subtitle">5-Piece Combo with Fresh Veggies</p>
+                            </div>
+                        </div>
+
+                        <p class="product-description">
+                            Our classic glazed spring rolls and samosas filled with delicious vegetables.
+                        </p>
+
+                        <!-- Combo Selector -->
+                        <div class="combo-selector">
+                            <div class="combo-item">
+                                <span class="combo-label">🥢 Spring Rolls</span>
+                                <div class="counter-control">
+                                    <button class="counter-btn minus" onclick="updateCount('regular', 'springRolls', -1)">−</button>
+                                    <span class="counter-value" id="regular-spring-rolls">3</span>
+                                    <button class="counter-btn plus" onclick="updateCount('regular', 'springRolls', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="combo-item">
+                                <span class="combo-label">🥟 Samosas</span>
+                                <div class="counter-control">
+                                    <button class="counter-btn minus" onclick="updateCount('regular', 'samosas', -1)">−</button>
+                                    <span class="counter-value" id="regular-samosas">2</span>
+                                    <button class="counter-btn plus" onclick="updateCount('regular', 'samosas', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <!-- <div class="piece-progress-container">
+                            <div class="piece-progress-bar">
+                                <div class="piece-progress-fill" id="regular-progress" style="width: 100%"></div>
+                            </div>
+                            <span class="piece-count" id="regular-piece-count">5/5 pieces</span>
+                        </div> -->
+
+                        <!-- Preparation Options -->
+                        <div class="prep-options">
+                            <h4>How would you like it?</h4>
+                            <div class="prep-buttons">
+                                <button class="prep-btn" data-category="regular" data-prep="frozen" onclick="setPreparation('regular', 'frozen')">
+                                    <span class="prep-icon">❄️</span>
+                                    <span class="prep-name">Freshly Frozen</span>
+                                    <span class="prep-price">GH₵30</span>
+                                </button>
+                                <button class="prep-btn active" data-category="regular" data-prep="fried" onclick="setPreparation('regular', 'fried')">
+                                    <span class="prep-icon">🔥</span>
+                                    <span class="prep-name">Crispy Fried</span>
+                                    <span class="prep-price">GH₵35</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart -->
+                        <div class="add-to-cart-section">
+                            <div class="price-display">
+                                <span class="price-label">Total:</span>
+                                <span class="price-amount" id="regular-price">GH₵35.00</span>
+                            </div>
+                            <button class="add-to-cart-btn" id="regular-add-btn" onclick="addToCart('regular')">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </main>
 
-        <!-- Footer -->
-        <footer
-            style="background: var(--dark-brown); color: var(--warm-white); text-align: center; padding: var(--space-xl); margin-top: var(--space-xl);">
-            <div class="container">
-                <p
-                    style="margin-bottom: var(--space-md); font-weight: 500;">&copy;
-                    2025 Crispy Cravings</p>
+                <!-- Meat Crunch Tab -->
+                <div class="tab-content" id="meat-tab">
+                    <!-- Sub-tab Navigation -->
+                    <div class="sub-tab-navigation">
+                        <button class="sub-tab-btn active" data-subtab="meat-10">10 Pieces</button>
+                        <button class="sub-tab-btn" data-subtab="meat-7">7 Pieces</button>
+                    </div>
 
-                <p
-                    style="opacity: 0.6; font-size: 0.9rem; margin-bottom: var(--space-lg);">
-                    Developed by <span
-                        style="color: var(--secondary-yellow);">Godwin
-                        Mawulikplim</span>
-                </p>
+                    <div class="sub-tab-contents">
+                        <!-- 10-Piece Section -->
+                        <div class="sub-tab-content active" id="meat-10">
+                            <div class="product-card">
+                                <div class="product-header">
+                                    <div class="product-emoji">🍖</div>
+                                    <div class="product-title">
+                                        <h2>Meat Crunch</h2>
+                                        <p class="product-subtitle">10-Piece Pure Meat Combo</p>
+                                    </div>
+                                </div>
 
+                                <p class="product-description">
+                                    All meat, no veggies! Our premium meat-filled spring rolls and samosas.
+                                </p>
+
+                                <!-- Combo Selector -->
+                                <div class="combo-selector">
+                                    <div class="combo-item">
+                                        <span class="combo-label">🥢 Spring Rolls</span>
+                                        <div class="counter-control">
+                                            <button class="counter-btn minus" onclick="updateCount('meat_crunch_10', 'springRolls', -1)">−</button>
+                                            <span class="counter-value" id="meat_crunch_10-spring-rolls">5</span>
+                                            <button class="counter-btn plus" onclick="updateCount('meat_crunch_10', 'springRolls', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="combo-item">
+                                        <span class="combo-label">🥟 Samosas</span>
+                                        <div class="counter-control">
+                                            <button class="counter-btn minus" onclick="updateCount('meat_crunch_10', 'samosas', -1)">−</button>
+                                            <span class="counter-value" id="meat_crunch_10-samosas">5</span>
+                                            <button class="counter-btn plus" onclick="updateCount('meat_crunch_10', 'samosas', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <!-- <div class="piece-progress-container">
+                                    <div class="piece-progress-bar">
+                                        <div class="piece-progress-fill" id="meat_crunch_10-progress" style="width: 100%"></div>
+                                    </div>
+                                    <span class="piece-count" id="meat_crunch_10-piece-count">10/10 pieces</span>
+                                </div> -->
+
+                                <!-- Preparation Options -->
+                                <div class="prep-options">
+                                    <h4>How would you like it?</h4>
+                                    <div class="prep-buttons">
+                                        <button class="prep-btn" data-category="meat_crunch_10" data-prep="frozen" onclick="setPreparation('meat_crunch_10', 'frozen')">
+                                            <span class="prep-icon">❄️</span>
+                                            <span class="prep-name">Freshly Frozen</span>
+                                            <span class="prep-price">GH₵70</span>
+                                        </button>
+                                        <button class="prep-btn active" data-category="meat_crunch_10" data-prep="fried" onclick="setPreparation('meat_crunch_10', 'fried')">
+                                            <span class="prep-icon">🔥</span>
+                                            <span class="prep-name">Crispy Fried</span>
+                                            <span class="prep-price">GH₵75</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Add to Cart -->
+                                <div class="add-to-cart-section">
+                                    <div class="price-display">
+                                        <span class="price-label">Total:</span>
+                                        <span class="price-amount" id="meat_crunch_10-price">GH₵75.00</span>
+                                    </div>
+                                    <button class="add-to-cart-btn" id="meat_crunch_10-add-btn" onclick="addToCart('meat_crunch_10')">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7-Piece Section -->
+                        <div class="sub-tab-content" id="meat-7">
+                            <div class="product-card">
+                                <div class="product-header">
+                                    <div class="product-emoji">🍖</div>
+                                    <div class="product-title">
+                                        <h2>Meat Crunch</h2>
+                                        <p class="product-subtitle">7-Piece Pure Meat Combo</p>
+                                    </div>
+                                </div>
+
+                                <p class="product-description">
+                                    Same delicious meat-filled goodness in a smaller portion.
+                                </p>
+
+                                <!-- Combo Selector -->
+                                <div class="combo-selector">
+                                    <div class="combo-item">
+                                        <span class="combo-label">🥢 Spring Rolls</span>
+                                        <div class="counter-control">
+                                            <button class="counter-btn minus" onclick="updateCount('meat_crunch_7', 'springRolls', -1)">−</button>
+                                            <span class="counter-value" id="meat_crunch_7-spring-rolls">4</span>
+                                            <button class="counter-btn plus" onclick="updateCount('meat_crunch_7', 'springRolls', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="combo-item">
+                                        <span class="combo-label">🥟 Samosas</span>
+                                        <div class="counter-control">
+                                            <button class="counter-btn minus" onclick="updateCount('meat_crunch_7', 'samosas', -1)">−</button>
+                                            <span class="counter-value" id="meat_crunch_7-samosas">3</span>
+                                            <button class="counter-btn plus" onclick="updateCount('meat_crunch_7', 'samosas', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <!-- <div class="piece-progress-container">
+                                    <div class="piece-progress-bar">
+                                        <div class="piece-progress-fill" id="meat_crunch_7-progress" style="width: 100%"></div>
+                                    </div>
+                                    <span class="piece-count" id="meat_crunch_7-piece-count">7/7 pieces</span>
+                                </div> -->
+
+                                <!-- Preparation Options -->
+                                <div class="prep-options">
+                                    <h4>How would you like it?</h4>
+                                    <div class="prep-buttons">
+                                        <button class="prep-btn" data-category="meat_crunch_7" data-prep="frozen" onclick="setPreparation('meat_crunch_7', 'frozen')">
+                                            <span class="prep-icon">❄️</span>
+                                            <span class="prep-name">Freshly Frozen</span>
+                                            <span class="prep-price">GH₵45</span>
+                                        </button>
+                                        <button class="prep-btn active" data-category="meat_crunch_7" data-prep="fried" onclick="setPreparation('meat_crunch_7', 'fried')">
+                                            <span class="prep-icon">🔥</span>
+                                            <span class="prep-name">Crispy Fried</span>
+                                            <span class="prep-price">GH₵50</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Add to Cart -->
+                                <div class="add-to-cart-section">
+                                    <div class="price-display">
+                                        <span class="price-label">Total:</span>
+                                        <span class="price-amount" id="meat_crunch_7-price">GH₵50.00</span>
+                                    </div>
+                                    <button class="add-to-cart-btn" id="meat_crunch_7-add-btn" onclick="addToCart('meat_crunch_7')">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </footer>
-        <!-- Back to Top Button -->
-        <button id="back-to-top"
-            onclick="window.scrollTo({top:0,behavior:'smooth'})"
-            style="position: fixed; bottom: var(--space-lg); right: var(--space-lg); 
-               background: var(--gradient-warm); color: white; border: none; 
-               border-radius: var(--radius-xl); width: 36px; height: 38px; 
-               font-size: 1.2rem; cursor: pointer; 
-               box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3); 
-               display: none; z-index: 1000; transition: all 0.3s ease; "
-            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(255, 107, 53, 0.4)'"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(255, 107, 53, 0.3)'"
-            title="Back to top">
-            ↑
-        </button>
+        </div>
+    </main>
 
-        <!-- Firebase SDK -->
-        <!-- <script type="module" src="js/app.js"></script>     -->
-        <!-- Firebase CDN scripts -->
-        <script
-            src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-        <script
-            src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Cart Preview (Fixed at bottom) -->
+    <div class="cart-preview hidden" id="cart-preview">
+        <div class="cart-preview-content">
+            <div class="cart-preview-info">
+                <span class="cart-preview-count"><span id="cart-count">0</span> items</span>
+                <span class="cart-preview-total" id="cart-total">GH₵0.00</span>
+            </div>
+            <a href="cart.html" class="cart-preview-btn">View Cart</a>
+        </div>
+    </div>
 
-        <!-- Your app script (NOT as module) -->
-        <script src="js/app.js"></script>
-        <script>
-window.addEventListener('scroll', () => {
-    const btn = document.getElementById('back-to-top');
-    btn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-</script>
-    </body>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">🥟 Crispy Cravings</p>
+                <p class="footer-tagline">Delivering happiness, one crispy bite at a time</p>
+                <div class="footer-delivery">
+                    <span>📅 Delivery Days:</span>
+                    <span class="delivery-days">Wednesday & Sunday</span>
+                </div>
+                <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+                    <a href="track.html" style="display: inline-block; padding: var(--space-xs) var(--space-md); border: 1px solid rgba(255, 210, 63, 0.3); border-radius: var(--radius-full); color: var(--secondary-yellow); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease;">
+                        📍 Order Tracking
+                    </a>
+                    <a href="contact.html" style="display: inline-block; padding: var(--space-xs) var(--space-md); border: 1px solid rgba(255, 210, 63, 0.3); border-radius: var(--radius-full); color: var(--secondary-yellow); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease;">
+                        📧 Contact Us
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev" style="font-size: 1rem; opacity: 1; margin-bottom: var(--space-xs);">Developed by <a href="https://godwinmawuli.com" target="_blank" style="color: var(--secondary-yellow); text-decoration: none; font-weight: 600;">Godwin Mawulikplim</a></p>
+                <p>&copy; 2025 Crispy Cravings</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/app.js"></script>
+</body>
 </html>

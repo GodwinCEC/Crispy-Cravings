@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - Crispy Cravings</title>
+    <meta name="description" content="Track your Crispy Cravings order">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <!-- Floating Header (Logo & Cart) -->
+    <div class="floating-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo-container">
+                <img src="images/brandlogo.png" alt="Crispy Cravings Logo" class="brand-icon" style="background: none; box-shadow: none; border-radius: 0; width: 60px; height: auto;">
+                <h1 class="logo">Crispy Cravings</h1>
+            </a>
+            <a href="cart.html" class="cart-icon" id="cart-icon">
+                <span class="cart-icon-emoji">🛒</span>
+                <span class="cart-badge" id="cart-badge">0</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Page Header Hero -->
+    <section class="page-hero">
+        <div class="hero-overlay"></div>
+        <img src="images/hero-food.png" alt="Track Order" class="hero-image">
+        <div class="hero-content">
+            <h2 class="hero-title">Track Order</h2>
+            <p class="hero-description">Enter your details to check your order status.</p>
+        </div>
+    </section>
+
+    <!-- Track Content -->
+    <main class="contact-container">
+        <div class="container">
+            <div class="contact-form-wrapper" style="max-width: 600px; margin: 0 auto;">
+                <!-- Track Form -->
+                <div id="track-form-container">
+                    <h2 class="section-title">Find Your Order</h2>
+                    <form id="track-form" class="contact-form">
+                        <div class="form-group">
+                            <label for="track-order-number">Order Number</label>
+                            <input type="text" id="track-order-number" placeholder="e.g., CC-20260116-ABCD" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="track-phone">Phone Number</label>
+                            <input type="tel" id="track-phone" placeholder="e.g., 0551234567" required pattern="[0-9]{10}">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%;">
+                            Track My Order
+                        </button>
+                    </form>
+                    <p id="track-error" class="login-error hidden" style="margin-top: var(--space-md); color: var(--accent-red); font-weight: 500;"></p>
+                </div>
+
+                <!-- Order Status (Hidden by default) -->
+                <div class="order-status-card hidden" id="order-status-container">
+                    <div class="status-header">
+                        <div class="status-icon" id="status-icon">📦</div>
+                        <p class="status-text" id="status-text">Your order status</p>
+                        <span class="status-badge pending" id="status-badge">Pending</span>
+                    </div>
+
+                    <div class="order-number-display">
+                        <p class="order-number-label">Order Number</p>
+                        <p class="order-number-value" id="display-order-number">---</p>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Customer</span>
+                        <span class="detail-value" id="display-customer">---</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery Location</span>
+                        <span class="detail-value" id="display-location">---</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery Day</span>
+                        <span class="detail-value" id="display-delivery-day">---</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Payment</span>
+                        <span class="detail-value" style="display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-xs);">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span id="display-payment-method-icon"></span>
+                                <span class="status-badge" id="display-payment-status">---</span>
+                            </div>
+                            <div id="re-payment-container" class="hidden">
+                                <button class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;" id="btn-pay-now">Pay Now</button>
+                            </div>
+                        </span>
+                    </div>
+
+                    <div style="margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 2px solid var(--light-cream);">
+                        <h4 style="font-family: var(--font-display); margin-bottom: var(--space-sm);">Items</h4>
+                        <div id="display-items">
+                            <!-- Items rendered here -->
+                        </div>
+                    </div>
+
+                    <div class="detail-row" style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 2px solid var(--light-cream);">
+                        <span class="detail-label" style="font-weight: 600; font-size: 1.1rem;">Total</span>
+                        <span class="detail-value" style="color: var(--primary-orange); font-size: 1.3rem; font-family: var(--font-display);" id="display-total">---</span>
+                    </div>
+
+                    <button class="btn-secondary" style="width: 100%; margin-top: var(--space-lg);" onclick="resetTracker()">
+                        Track Another Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">🥟 Crispy Cravings</p>
+                <p class="footer-tagline">Delivering happiness, one crispy bite at a time</p>
+                <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+                    <a href="track.html" class="footer-link-pill">📍 Order Tracking</a>
+                    <a href="contact.html" class="footer-link-pill">📧 Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev">Developed by <a href="https://godwinmawuli.com" target="_blank" style="color: var(--secondary-yellow); text-decoration: none; font-weight: 600;">Godwin Mawulikplim</a></p>
+                <p>&copy; 2025 Crispy Cravings</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+    
+    <!-- Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/track.js"></script>
+</body>
+</html>

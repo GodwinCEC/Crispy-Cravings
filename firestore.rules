@@ -3,17 +3,39 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 1, 2);
+    // Orders - anyone can create, only admins can read/update/delete
+    // Order tracking by orderNumber+phone will be handled via Cloud Function
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Settings - public read, admin write
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admins collection - only the specific admin can read their own doc
+    match /admins/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
+    }
+
+    // Payments - only admins can read/write (cloud functions bypass rules)
+    match /payments/{ref} {
+      allow read, write: if isAdmin();
+    }
+
+    // Contacts - anyone can create, only admins can read/update/delete
+    match /contacts/{contactId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
     }
   }
 }

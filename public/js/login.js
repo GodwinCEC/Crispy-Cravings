@@ -1,32 +1,5 @@
-// Firebase configuration
-const firebaseConfig = {
-
-    apiKey: "AIzaSyDN9Zg0OhiEy2v1vjvgsd9UZE4qbPAfWIM",
-
-    authDomain: "crispy-cravings.firebaseapp.com",
-
-    projectId: "crispy-cravings",
-
-    storageBucket: "crispy-cravings.firebasestorage.app",
-
-    messagingSenderId: "823824324484",
-
-    appId: "1:823824324484:web:ac23c1418fcfb0c8d56fd1",
-
-    measurementId: "G-2NB4SKB853"
-
-};
-
-// Initialize Firebase
-let auth, db;
-try {
-    firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
-    db = firebase.firestore();
-    console.log('Firebase initialized for login');
-} catch (error) {
-    console.error('Firebase initialization error:', error);
-}
+// Login Page - Uses shared firebase-config.js for Firebase initialization
+// auth and db are available from firebase-config.js
 
 // DOM elements
 const loginForm = document.getElementById('login-form');

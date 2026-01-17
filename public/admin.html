@@ -5,84 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Crispy Cravings</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍟</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <h1 class="logo">📊 Admin Dashboard</h1>
-            <p class="tagline">Manage Orders & Restaurant Settings</p>
-            <div style="margin-top: var(--space-md); display: flex; justify-content: center; align-items: center; gap: var(--space-md); flex-wrap: wrap;">
-                <div id="admin-info"></div>
-                <button id="logout-btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem;">
-                    🚪 Logout
-                </button>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1 class="admin-title">📊 Admin Dashboard</h1>
+            <div class="admin-info">
+                <span id="admin-email" style="font-size: 0.9rem; opacity: 0.9;">Loading...</span>
+                <button id="logout-btn" class="logout-btn">🚪 Logout</button>
             </div>
         </div>
     </header>
 
-    <main>
-        <section class="dashboard-container">
-            <div class="container">
-                <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-xl); box-shadow: 0 8px 32px var(--shadow-warm);">
-                    <h3 style="font-family: var(--font-display); margin-bottom: var(--space-md); color: var(--text-dark);">Restaurant Status</h3>
-                    <div style="display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: var(--space-xs); font-weight: 600;">
-                            <input type="checkbox" id="restaurant-open" style="transform: scale(1.2);">
-                            Restaurant Open
-                        </label>
-                        <button id="save-settings" class="action-btn btn-deliver">Save Settings</button>
-                        <span id="settings-status" class="text-light"></span>
-                    </div>
-                </div>
+    <!-- Main Content -->
+    <main class="admin-container">
+        <!-- Settings Card -->
+        <div class="settings-card">
+            <h3>🏪 Store Status</h3>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="restaurant-open">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span id="store-status-text">Store is closed</span>
+            </div>
+        </div>
 
-                <div style="background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 32px var(--shadow-warm);">
-                    <div style="padding: var(--space-lg); border-bottom: 1px solid #f0f0f0;">
-                        <h3 style="font-family: var(--font-display); margin: 0; color: var(--text-dark);">Recent Orders</h3>
-                    </div>
-                    
-                    <div style="overflow-x: auto;">
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer</th>
-                                    <th>Snack</th>
-                                    <th>Quantity</th>
-                                    <th>Location</th>
-                                    <th>Phone</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Time</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table-body">
-                                <tr>
-                                    <td colspan="10" style="text-align: center; padding: var(--space-xl); color: var(--text-light);">
-                                        <div class="spinner" style="margin: 0 auto var(--space-md);"></div>
-                                        Loading orders...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Kitchen Summary (Action Oriented) -->
+        <div id="kitchen-summary-container" class="settings-card hidden">
+            <h3>🍳 Kitchen Prep List (Next Delivery)</h3>
+            <div id="kitchen-summary-content" class="stats-grid" style="margin-bottom: 0;">
+                <!-- Summary items will be rendered here -->
+            </div>
+        </div>
 
-                <div id="stats-container" style="margin-top: var(--space-xl); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
-                </div>
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-pending">0</div>
+                <div class="stat-label">Pending Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-today">0</div>
+                <div class="stat-label">Today's Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-unpaid">0</div>
+                <div class="stat-label">Pending Payments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-revenue">GH₵0</div>
+                <div class="stat-label">Today's Revenue</div>
+            </div>
+        </div>
 
-                <div class="text-center mt-lg">
-                    <a href="index.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">← Back to Menu</a>
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <span class="filter-label">Status:</span>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="status" data-value="all">All</button>
+                    <button class="filter-btn" data-filter="status" data-value="pending">New</button>
+                    <button class="filter-btn" data-filter="status" data-value="confirmed">Confirmed</button>
+                    <button class="filter-btn" data-filter="status" data-value="delivered">Delivered</button>
                 </div>
             </div>
-        </section>
+            <div class="filter-group">
+                <span class="filter-label">Payment:</span>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="payment" data-value="all">All</button>
+                    <button class="filter-btn" data-filter="payment" data-value="paid">Paid</button>
+                    <button class="filter-btn" data-filter="payment" data-value="unpaid">Unpaid</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Delivery:</span>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="delivery" data-value="all">All</button>
+                    <button class="filter-btn" data-filter="delivery" data-value="wednesday">Wed</button>
+                    <button class="filter-btn" data-filter="delivery" data-value="sunday">Sun</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Items</th>
+                        <th>Location</th>
+                        <th>Delivery</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Orders will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-lg" style="margin-top: var(--space-xl); padding: var(--space-lg); border-top: 1px solid #eee;">
+            <p class="footer-dev" style="font-size: 1rem; opacity: 1; margin-bottom: var(--space-xs); text-align: center;">Developed by <span style="color: var(--primary-orange);">Godwin Mawulikplim</span></p>
+            <a href="index.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600; display: block; margin-top: var(--space-sm);">← Back to Store</a>
+        </div>
     </main>
 
-    <!-- Firebase CDN scripts -->
+    <!-- Order Details Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-order-number">Order Details</h2>
+                <span class="close-modal" id="close-modal">&times;</span>
+            </div>
+            <div id="modal-body">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+    <!-- Admin Script -->
+    <script src="js/firebase-config.js"></script>
     <script src="js/admin.js"></script>
 </body>
 </html>

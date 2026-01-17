@@ -3,75 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Crispy Cravings</title>
+    <title>Admin Login - Premium - Crispy Cravings</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍟</text></svg>">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+    <style>
+        :root {
+            --premium-black: #0a0a0a;
+            --premium-gray: #1a1a1a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-glow: rgba(255, 107, 53, 0.3);
+        }
+
+        body {
+            background-color: var(--premium-black);
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--accent-glow) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 210, 63, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px var(--primary-orange));
+        }
+
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 8px;
+            margin-left: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.15);
+        }
+
+        .form-input:focus + .form-label {
+            color: var(--primary-orange);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--gradient-warm);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px -10px rgba(255, 107, 53, 0.5);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px rgba(255, 107, 53, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary-orange);
+        }
+
+        #error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            color: #ff8888;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 20px;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <h1 class="logo">🔐 Admin Login</h1>
-            <p class="tagline">Enter your credentials to access the dashboard</p>
-        </div>
-    </header>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <header class="login-header">
+                <span class="login-icon">🔐</span>
+                <h1 class="login-title">Admin Access</h1>
+                <p class="login-subtitle">Please enter your credentials to proceed</p>
+            </header>
 
-    <main>
-        <section class="menu-section">
-            <div class="container">
-                <div class="form-container">
-                    <form id="login-form">
-                        <div class="form-group">
-                            <label for="email" class="form-label">Admin Email</label>
-                            <input type="email" id="email" name="email" class="form-input" required 
-                                   placeholder="Enter your admin email">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-input" required 
-                                   placeholder="Enter your password">
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="submit-btn" id="login-btn">
-                                Sign In
-                            </button>
-                        </div>
-
-                        <div id="error-message" class="hidden" 
-                             style="margin-top: var(--space-md); padding: var(--space-md); 
-                                    background: #f8d7da; color: #721c24; border-radius: var(--radius-md); 
-                                    text-align: center;">
-                        </div>
-                    </form>
-
-                    <div class="text-center mt-lg">
-                        <a href="index.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
-                            ← Back to Menu
-                        </a>
-                    </div>
-
-                    <!-- Demo Credentials -->
-                    <!-- <div style="margin-top: var(--space-xl); padding: var(--space-lg); 
-                                background: var(--light-cream); border-radius: var(--radius-md); 
-                                border-left: 4px solid var(--primary-orange);">
-                        <h4 style="margin-bottom: var(--space-md); color: var(--text-dark);">Demo Admin Credentials:</h4>
-                        <div style="font-family: monospace; font-size: 0.9rem; color: var(--text-light);">
-                            <div>Email: <strong>admin1@crispycravings.com</strong></div>
-                            <div>Password: <strong>admin123</strong></div>
-                        </div>
-                    </div> -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">Admin Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required 
+                           placeholder="your-email@example.com">
                 </div>
-            </div>
-        </section>
-    </main>
 
-    <!-- Firebase CDN scripts -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required 
+                           placeholder="••••••••••••">
+                </div>
+
+                <button type="submit" class="submit-btn" id="login-btn">
+                    Authenticate
+                </button>
+
+                <div id="error-message" class="hidden"></div>
+            </form>
+
+            <a href="index.html" class="back-link">
+                ← Return to Crispy Cravings
+            </a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
-    <!-- Login script -->
+
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
     <script src="js/login.js"></script>
 </body>
 </html>

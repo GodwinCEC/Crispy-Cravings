@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Crispy Cravings</title>
+    <meta name="description" content="Complete your order">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="loading-spinner-large"></div>
+        <p class="loading-text">Processing your order...</p>
+    </div>
+
+    <!-- Floating Header -->
+    <div class="floating-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo-container">
+                <img src="images/brandlogo.png" alt="Crispy Cravings Logo" class="brand-icon" style="background: none; box-shadow: none; border-radius: 0; width: 60px; height: auto;">
+                <h1 class="logo">Crispy Cravings</h1>
+            </a>
+            <div class="cart-icon" id="cart-icon">
+                <span class="cart-icon-emoji">🛒</span>
+                <span class="cart-badge" id="cart-badge">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Header Hero -->
+    <section class="page-hero" style="height: 30vh; min-height: 250px;">
+        <div class="hero-overlay"></div>
+        <img src="images/hero-food.png" alt="Checkout" class="hero-image">
+        <div class="hero-content">
+            <h2 class="hero-title" style="font-size: 3.5rem;">Checkout</h2>
+            <p class="hero-description">Complete your order details below.</p>
+        </div>
+    </section>
+
+    <!-- Checkout Content -->
+    <main class="contact-container">
+        <div class="container">
+            <form class="checkout-form-premium" id="checkout-form">
+                <div class="checkout-grid-premium">
+                    <!-- Left Column: Forms -->
+                    <div class="checkout-details-column">
+                        <!-- Customer Information -->
+                        <div class="contact-form-wrapper" style="margin-bottom: var(--space-lg);">
+                            <h3 class="section-title">👤 Your Details</h3>
+                            <div class="contact-form">
+                                <div class="form-group">
+                                    <label for="customer-name">Full Name</label>
+                                    <input type="text" id="customer-name" placeholder="Enter your name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="customer-phone">Phone Number</label>
+                                    <input type="tel" id="customer-phone" placeholder="e.g., 0551234567" required pattern="[0-9]{10}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Location -->
+                        <div class="contact-form-wrapper" style="margin-bottom: var(--space-lg);">
+                            <h3 class="section-title">📍 Delivery</h3>
+                            <div class="contact-form">
+                                <div class="form-group">
+                                    <label for="location-select">Hostel / Location</label>
+                                    <select id="location-select" required onchange="handleLocationChange()">
+                                        <option value="">Select your location</option>
+                                        <optgroup label="KNUST Campus">
+                                            <option value="knust:unity">Unity Hall (Conti)</option>
+                                            <option value="knust:katanga">University Hall (Katanga)</option>
+                                            <option value="knust:independence">Independence Hall</option>
+                                            <option value="knust:republic">Republic Hall</option>
+                                            <option value="knust:qeh">Queen Elizabeth Hall</option>
+                                        </optgroup>
+                                        <optgroup label="KATH Campus">
+                                            <option value="kath:laing">Laing Hostel</option>
+                                            <option value="kath:valco">Valco</option>
+                                            <option value="kath:getfund">Getfund</option>
+                                            <option value="kath:gold">Gold</option>
+                                        </optgroup>
+                                        <option value="other">Other (specify below)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group custom-location-wrapper hidden" id="custom-location-wrapper">
+                                    <label for="custom-location">Specify Your Location</label>
+                                    <input type="text" id="custom-location" placeholder="Enter your location">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="room-number">Room Number</label>
+                                    <input type="text" id="room-number" placeholder="e.g., B204" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Day & Payment -->
+                        <div class="contact-form-wrapper">
+                            <h3 class="section-title">💳 Options</h3>
+                            <div class="contact-form">
+                                <div class="form-group">
+                                    <label>Delivery Day</label>
+                                    <div class="delivery-options-premium">
+                                        <div class="option-pill">
+                                            <input type="radio" name="delivery-day" id="delivery-wednesday" value="wednesday" required>
+                                            <label for="delivery-wednesday">Wednesday <small id="wednesday-date"></small></label>
+                                        </div>
+                                        <div class="option-pill">
+                                            <input type="radio" name="delivery-day" id="delivery-sunday" value="sunday">
+                                            <label for="delivery-sunday">Sunday <small id="sunday-date"></small></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Payment Method</label>
+                                    <div class="payment-options-premium">
+                                        <div class="option-pill">
+                                            <input type="radio" name="payment-method" id="payment-momo" value="momo" required onchange="handlePaymentMethodChange()">
+                                            <label for="payment-momo">📱 MoMo</label>
+                                        </div>
+                                        <div class="option-pill">
+                                            <input type="radio" name="payment-method" id="payment-cash" value="cash" onchange="handlePaymentMethodChange()">
+                                            <label for="payment-cash">💵 Cash</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group momo-email-wrapper hidden" id="momo-email-wrapper">
+                                    <label for="momo-email">Email (for receipt)</label>
+                                    <input type="email" id="momo-email" placeholder="you@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="special-instructions">Special Instructions (Optional)</label>
+                                    <textarea id="special-instructions" placeholder="e.g., Allergies, delivery notes, etc." rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Final Order Summary -->
+                <div class="cart-summary-premium" style="margin-top: var(--space-xl);">
+                    <h3 class="summary-title">Order Summary</h3>
+                    <div id="order-summary-items" class="checkout-items-list">
+                        <!-- Items rendered by JS -->
+                    </div>
+                    
+                    <div class="summary-divider"></div>
+                    
+                    <div class="summary-rows">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="order-total-summary">GH₵0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span class="free-badge">Free</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span id="order-total">GH₵0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="terms-check" style="margin-top: var(--space-lg); margin-bottom: var(--space-md);">
+                        <input type="checkbox" id="terms-agree" required>
+                        <label for="terms-agree">I agree to the <a href="#" style="color: var(--primary-orange);">Terms & Policies</a></label>
+                    </div>
+
+                    <button type="submit" class="btn-checkout-premium" style="width: 100%;">
+                        PROCEED TO PAYMENT
+                        <span class="btn-arrow">❯</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">🥟 Crispy Cravings</p>
+                <p class="footer-tagline">Delivering happiness, one crispy bite at a time</p>
+                <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+                    <a href="track.html" class="footer-link-pill">📍 Order Tracking</a>
+                    <a href="contact.html" class="footer-link-pill">📧 Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev">Developed by <a href="https://godwinmawuli.com" target="_blank" style="color: var(--secondary-yellow); text-decoration: none; font-weight: 600;">Godwin Mawulikplim</a></p>
+                <p>&copy; 2025 Crispy Cravings</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+
+    <!-- Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

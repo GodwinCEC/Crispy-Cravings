@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - Crispy Cravings</title>
+    <meta name="description" content="Your order has been placed successfully">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <!-- Header -->
+    <header class="page-header">
+        <h1>🎉 Order Confirmed!</h1>
+        <p>Thank you for your order</p>
+    </header>
+
+    <!-- Success Content -->
+    <main class="success-container">
+        <div class="success-icon">✅</div>
+        <h2 class="success-title">Your crispies are on the way!</h2>
+        <p class="success-message" id="success-message">
+            We've received your order and will have it ready for delivery.
+        </p>
+
+        <!-- Order Details Card -->
+        <div class="order-details-card">
+            <div class="order-number-display">
+                <p class="order-number-label">Order Number</p>
+                <p class="order-number-value" id="order-number">---</p>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Delivery Day</span>
+                <span class="detail-value" id="delivery-day">---</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Payment Method</span>
+                <span class="detail-value" id="payment-method">---</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Payment Status</span>
+                <span class="detail-value">
+                    <span class="status-badge" id="payment-status">---</span>
+                </span>
+            </div>
+
+            <div class="detail-row" style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 2px solid var(--light-cream);">
+                <span class="detail-label" style="font-weight: 600;">Total</span>
+                <span class="detail-value" style="color: var(--primary-orange); font-size: 1.2rem;" id="order-total">---</span>
+            </div>
+        </div>
+
+        <!-- Copy Order ID & Track Order -->
+         <div class="order-details-card" style="background: var(--light-cream); text-align: center;">
+            <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: var(--space-md);">
+                Please save your Order ID for reference.
+            </p>
+            
+            <button id="copy-order-btn" class="btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: var(--space-md);">
+                <span>📋</span> Copy Order ID
+            </button>
+
+            <a href="track.html" class="btn-secondary" style="display: block; text-align: center; width: 100%;">
+                Track Order
+            </a>
+        </div>
+
+        <!-- Actions -->
+        <div style="margin-top: var(--space-lg);">
+            <a href="index.html" class="btn-secondary" style="display: block; text-align: center;">
+                Order More Crispies
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">🥟 Crispy Cravings</p>
+                <p class="footer-tagline">Delivering happiness, one crispy bite at a time</p>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev" style="font-size: 1rem; opacity: 1; margin-bottom: var(--space-xs);">Developed by <span>Godwin Mawulikplim</span></p>
+                <p>&copy; 2025 Crispy Cravings</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script>
+        // Load order details from session storage
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderData = sessionStorage.getItem('lastOrder');
+
+            if (!orderData) {
+                // No order data, redirect to home
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const order = JSON.parse(orderData);
+
+            // Populate order details
+            document.getElementById('order-number').textContent = order.orderNumber;
+            document.getElementById('delivery-day').textContent = capitalizeFirst(order.deliveryDay);
+            document.getElementById('payment-method').textContent = order.paymentMethod === 'momo' ? 'Mobile Money' : 'Cash on Delivery';
+            document.getElementById('order-total').textContent = formatCurrency(order.totalAmount);
+
+            // Payment status
+            const statusEl = document.getElementById('payment-status');
+            if (order.paymentStatus === 'paid') {
+                statusEl.textContent = 'Paid';
+                statusEl.className = 'status-badge paid';
+            } else {
+                statusEl.textContent = 'Pay on Delivery';
+                statusEl.className = 'status-badge unpaid';
+            }
+
+            // Update success message based on payment method
+            const messageEl = document.getElementById('success-message');
+            if (order.paymentMethod === 'cash') {
+                messageEl.innerHTML = `We've received your order. Please have <strong>${formatCurrency(order.totalAmount)}</strong> ready for payment on delivery.`;
+            } else {
+                messageEl.innerHTML = `Payment received! Your order will be delivered on <strong>${capitalizeFirst(order.deliveryDay)}</strong>.`;
+            }
+
+            // Clear session storage after displaying
+            // sessionStorage.removeItem('lastOrder');
+
+            // Copy Order ID functionality
+            const copyBtn = document.getElementById('copy-order-btn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    const orderNum = order.orderNumber;
+                    navigator.clipboard.writeText(orderNum).then(() => {
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<span>✅</span> Copied!';
+                        copyBtn.classList.add('success'); // You can add a success class if you want specific styling
+                        
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                            copyBtn.classList.remove('success');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Failed to copy Order ID. Please copy it manually.');
+                    });
+                });
+            }
+        });
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>

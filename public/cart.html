@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Crispy Cravings</title>
+    <meta name="description" content="Review your order before checkout">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="manifest" href="images/site.webmanifest">
+</head>
+<body>
+    <!-- Floating Header (Logo & Cart) -->
+    <div class="floating-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo-container">
+                <img src="images/brandlogo.png" alt="Crispy Cravings Logo" class="brand-icon" style="background: none; box-shadow: none; border-radius: 0; width: 60px; height: auto;">
+                <h1 class="logo">Crispy Cravings</h1>
+            </a>
+            <div class="cart-icon" id="cart-icon">
+                <span class="cart-icon-emoji">🛒</span>
+                <span class="cart-badge" id="cart-badge">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Header Hero -->
+    <section class="page-hero">
+        <div class="hero-overlay"></div>
+        <img src="images/hero-food.png" alt="Your Cart" class="hero-image">
+        <div class="hero-content">
+            <h2 class="hero-title">Your Box</h2>
+            <p class="hero-description">Review your crispies before checkout.</p>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <main class="cart-container-premium">
+        <div class="container">
+            <div id="cart-items-container">
+                <!-- Items will be rendered here by JS -->
+                <div class="loading-state">
+                    <span class="loading-spinner"></span>
+                    <p>Loading your cart...</p>
+                </div>
+            </div>
+
+            <div class="cart-grid-summary">
+                <!-- Track Order Shortcut -->
+                <div class="track-info-side">
+                    <a href="track.html" class="track-card-shortcut">
+                        <div class="track-icon">📍</div>
+                        <div class="track-text">
+                            <h4>Already ordered?</h4>
+                            <p>Track your delivery status here.</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary-premium" id="cart-summary-section">
+                    <h3 class="summary-title">Summary</h3>
+                    <div class="summary-rows">
+                        <div class="summary-row">
+                            <span class="label" id="cart-item-count">0 items</span>
+                            <span class="value"></span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Subtotal</span>
+                            <span class="value" id="cart-subtotal">GH₵0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="label">Delivery</span>
+                            <span class="value free-badge">Free</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span class="label">Total</span>
+                            <span class="value" id="cart-total-amount">GH₵0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-actions-premium" id="cart-actions-section">
+                        <button class="btn-checkout" onclick="proceedToCheckout()">
+                            Proceed to Checkout
+                            <span class="btn-arrow">❯</span>
+                        </button>
+                        <a href="index.html" class="btn-continue">Add More Items</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-brand">🥟 Crispy Cravings</p>
+                <p class="footer-tagline">Delivering happiness, one crispy bite at a time</p>
+                <div style="margin-top: var(--space-md); display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap;">
+                    <a href="track.html" class="footer-link-pill">📍 Order Tracking</a>
+                    <a href="contact.html" class="footer-link-pill">📧 Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-dev">Developed by <a href="https://godwinmawuli.com" target="_blank" style="color: var(--secondary-yellow); text-decoration: none; font-weight: 600;">Godwin Mawulikplim</a></p>
+                <p>&copy; 2025 Crispy Cravings</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+        // Initialize cart page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCartItems();
+            updateCartPageUI();
+        });
+
+        // Update cart page specific UI
+        function updateCartPageUI() {
+            const summary = cart.getSummary();
+            const summarySection = document.getElementById('cart-summary-section');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const itemCountEl = document.getElementById('cart-item-count');
+
+            if (summary.itemCount === 0) {
+                summarySection.style.display = 'none';
+                document.querySelector('.track-info-side').style.gridColumn = '1 / -1';
+            } else {
+                summarySection.style.display = 'block';
+                document.querySelector('.track-info-side').style.gridColumn = 'auto';
+                if (subtotalEl) {
+                    subtotalEl.textContent = formatCurrency(summary.total);
+                }
+                if (itemCountEl) {
+                    itemCountEl.textContent = `${summary.itemCount} ${summary.itemCount === 1 ? 'item' : 'items'}`;
+                }
+            }
+        }
+
+        // Listen for cart updates
+        window.addEventListener('cartUpdate', () => {
+            renderCartItems();
+            updateCartPageUI();
+        });
+    </script>
+</body>
+</html>
