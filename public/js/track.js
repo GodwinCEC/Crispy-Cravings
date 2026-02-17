@@ -166,7 +166,7 @@ function displayOrderStatus(order) {
     itemsContainer.innerHTML = order.items.map(item => `
         <div style="padding: var(--space-xs) 0; border-bottom: 1px solid var(--light-cream);">
             <div style="display: flex; justify-content: space-between;">
-                <span>${item.categoryName} (${item.subtitle})</span>
+                <span>${PRODUCTS[item.category]?.name || item.categoryName} (${PRODUCTS[item.category]?.subtitle || item.subtitle})</span>
                 <span style="font-weight: 600;">${formatCurrency(item.price)}</span>
             </div>
             <div style="font-size: 0.85rem; color: var(--text-light);">

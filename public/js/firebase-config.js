@@ -1,4 +1,5 @@
 // Firebase Configuration - Single Source of Truth
+console.log('--- Config Version 2.0 Loaded ---');
 // All other JS files should use this config
 
 const firebaseConfig = {
@@ -19,8 +20,8 @@ const PRODUCTS = {
     regular: {
         id: 'regular',
         name: 'Regular Crispies',
-        subtitle: 'Classic goodness with veggies',
-        description: '5-piece combo of glazed spring rolls and samosas with fresh veggie filling',
+        subtitle: 'Meat and veggie mix',
+        description: '5-piece combo of glazed spring rolls and samosas with a savory mix of meat and fresh veggies',
         pieceCount: 5,
         defaultSplit: { springRolls: 3, samosas: 2 },
         allowedSplits: [
@@ -89,7 +90,7 @@ const LOCATIONS = {
 };
 
 // Delivery Days
-const DELIVERY_DAYS = ['wednesday', 'sunday'];
+const DELIVERY_DAYS = ['wednesday', 'saturday'];
 
 // Initialize Firebase (only if not already initialized)
 // Initialize Firebase (only if not already initialized)

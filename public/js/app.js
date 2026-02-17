@@ -274,7 +274,7 @@ async function checkStoreStatus() {
 function updateStoreStatusUI() {
     if (availabilityBanner) {
         if (isStoreOpen) {
-            // availabilityBanner.textContent = "We're open! Order now for Wednesday or Sunday delivery 🎉";
+            // availabilityBanner.textContent = "We're open! Order now for Wednesday or Saturday delivery 🎉";
             availabilityBanner.textContent = "";
             availabilityBanner.classList.add('available');
             // availabilityBanner.classList.remove('hidden');

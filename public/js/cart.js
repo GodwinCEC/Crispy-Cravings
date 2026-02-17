@@ -187,8 +187,8 @@ function renderCartItems() {
         <div class="cart-item" data-id="${item.id}">
             <div class="cart-item-info">
                 <div class="cart-item-header">
-                    <h3 class="cart-item-name">${item.categoryName}</h3>
-                    <span class="cart-item-subtitle">${item.subtitle}</span>
+                    <h3 class="cart-item-name">${PRODUCTS[item.category]?.name || item.categoryName}</h3>
+                    <span class="cart-item-subtitle">${PRODUCTS[item.category]?.subtitle || item.subtitle}</span>
                 </div>
                 <div class="cart-item-details">
                     <span class="cart-item-combo">

@@ -7,8 +7,13 @@ let allOrders = [];
 let currentFilters = {
     status: 'all',
     payment: 'all',
-    delivery: 'all'
+    delivery: 'all',
+    time: 'all',
+    search: '',
+    sort: 'newest',
+    group: 'delivery'
 };
+let collapsedColumns = new Set();
 
 // DOM elements
 const restaurantOpenCheckbox = document.getElementById('restaurant-open');
@@ -18,13 +23,22 @@ const logoutBtn = document.getElementById('logout-btn');
 const adminEmailEl = document.getElementById('admin-email');
 const orderModal = document.getElementById('order-modal');
 const closeModal = document.getElementById('close-modal');
+const orderSearchInput = document.getElementById('order-search');
+const exportBtn = document.getElementById('export-btn');
+const refreshBtn = document.getElementById('refresh-btn');
 
 // Close modal logic
 if (closeModal) {
-    closeModal.onclick = () => orderModal.style.display = 'none';
+    closeModal.onclick = () => {
+        orderModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
 }
 window.onclick = (event) => {
-    if (event.target === orderModal) orderModal.style.display = 'none';
+    if (event.target === orderModal) {
+        orderModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 };
 
 // Initialize admin dashboard
@@ -72,6 +86,7 @@ function initializeDashboard() {
     loadOrders();
     setupEventListeners();
     setupFilterListeners();
+    setupColumnCollapsing();
 }
 
 // Setup event listeners
@@ -84,6 +99,35 @@ function setupEventListeners() {
     // Logout
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Search
+    if (orderSearchInput) {
+        orderSearchInput.addEventListener('input', (e) => {
+            currentFilters.search = e.target.value.toLowerCase();
+            const filtered = filterOrders(allOrders);
+            displayOrders(filtered);
+            updateStats(filtered);
+            updateKitchenSummary(filtered);
+        });
+    }
+
+    // Export
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportToCSV);
+    }
+
+    // Refresh
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '⏳...';
+            loadOrders();
+            setTimeout(() => {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '🔄 Refresh';
+            }, 1000);
+        });
     }
 }
 
@@ -104,8 +148,31 @@ function setupFilterListeners() {
             // Update filter
             currentFilters[filterType] = filterValue;
 
-            // Re-render orders
-            displayOrders(filterOrders(allOrders));
+            // Re-render orders and summary
+            const filtered = filterOrders(allOrders);
+            displayOrders(filtered);
+            updateStats(filtered);
+            updateKitchenSummary(filtered);
+        });
+    });
+}
+
+// Setup Column Collapsing
+function setupColumnCollapsing() {
+    const headers = document.querySelectorAll('.orders-table th');
+    headers.forEach((th, index) => {
+        th.addEventListener('click', () => {
+            const colIndex = index + 1; // 1-indexed
+            if (collapsedColumns.has(colIndex)) {
+                collapsedColumns.delete(colIndex);
+            } else {
+                collapsedColumns.add(colIndex);
+            }
+            // Update table headers
+            th.classList.toggle('collapsed-col');
+            // Update current body
+            const filtered = filterOrders(allOrders);
+            displayOrders(filtered);
         });
     });
 }
@@ -196,9 +263,10 @@ function loadOrders() {
                 allOrders.push({ id: doc.id, ...doc.data() });
             });
 
-            displayOrders(filterOrders(allOrders));
-            updateStats(allOrders);
-            updateKitchenSummary(allOrders);
+            const filtered = filterOrders(allOrders);
+            displayOrders(filtered);
+            updateStats(filtered);
+            updateKitchenSummary(filtered);
         }, (error) => {
             console.error('Error loading orders:', error);
             showError(`Error loading orders: ${error.message}`);
@@ -213,18 +281,53 @@ function loadOrders() {
 // Filter orders based on current filters
 function filterOrders(orders) {
     return orders.filter(order => {
+        // Time filter
+        if (currentFilters.time !== 'all') {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const orderDate = order.createdAt?.toDate ? order.createdAt.toDate() : new Date();
+
+            if (currentFilters.time === 'today') {
+                if (orderDate < today) return false;
+            } else if (currentFilters.time === 'week') {
+                const lastWeek = new Date(today);
+                lastWeek.setDate(today.getDate() - 7);
+                if (orderDate < lastWeek) return false;
+            }
+        }
+
         // Status filter
-        if (currentFilters.status !== 'all' && order.status !== currentFilters.status) {
-            return false;
+        if (currentFilters.status !== 'all') {
+            const paymentStatus = order.payment?.status || 'unpaid';
+            const paymentMethod = (order.payment?.method || 'momo').toLowerCase();
+            const isPaid = paymentStatus === 'paid';
+            const isCash = paymentMethod === 'cash';
+            const isDelivered = order.status === 'delivered';
+
+            if (currentFilters.status === 'confirmed') {
+                // Confirmed consists of both paid (momo) and cash
+                if (!isPaid && !isCash) return false;
+                if (isDelivered) return false;
+            } else if (currentFilters.status === 'delivered') {
+                if (!isDelivered) return false;
+            }
         }
 
         // Payment filter
         if (currentFilters.payment !== 'all') {
             const paymentStatus = order.payment?.status || 'unpaid';
-            if (currentFilters.payment === 'paid' && paymentStatus !== 'paid') {
+            const paymentMethod = (order.payment?.method || 'momo').toLowerCase();
+            const isDigitalPaid = paymentStatus === 'paid';
+            const isCash = paymentMethod === 'cash';
+
+            if (currentFilters.payment === 'paid' && !isDigitalPaid) {
                 return false;
             }
-            if (currentFilters.payment === 'unpaid' && paymentStatus === 'paid') {
+            if (currentFilters.payment === 'verified') {
+                if (!isDigitalPaid && !isCash) return false;
+            }
+            if (currentFilters.payment === 'unpaid' && isDigitalPaid) {
                 return false;
             }
         }
@@ -237,8 +340,41 @@ function filterOrders(orders) {
             }
         }
 
+        // Search filter
+        if (currentFilters.search) {
+            const searchLower = currentFilters.search;
+            const customerName = (order.customer?.name || '').toLowerCase();
+            const customerPhone = (order.customer?.phone || '').toLowerCase();
+            const orderID = (order.orderNumber || order.id || '').toLowerCase();
+
+            if (!customerName.includes(searchLower) &&
+                !customerPhone.includes(searchLower) &&
+                !orderID.includes(searchLower)) {
+                return false;
+            }
+        }
+
         return true;
+    }).sort((a, b) => {
+        if (currentFilters.sort === 'name') {
+            const nameA = (a.customer?.name || '').toLowerCase();
+            const nameB = (b.customer?.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        }
+
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return currentFilters.sort === 'newest' ? timeB - timeA : timeA - timeB;
     });
+}
+
+// Helper to determine order type for grouping
+function getOrderTypeIdentifier(order) {
+    if (!order.items || order.items.length === 0) return 'Empty Order';
+    if (order.items.length > 1) return 'Mixed / Multi-pack';
+
+    const item = order.items[0];
+    return `${item.springRolls}SR + ${item.samosas}S (${item.categoryName})`;
 }
 
 // Display orders in table with grouping
@@ -246,7 +382,7 @@ function displayOrders(orders) {
     if (orders.length === 0) {
         ordersTableBody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align: center; padding: var(--space-xl); color: var(--text-light);">
+                <td colspan="10" style="text-align: center; padding: var(--space-xl); color: var(--text-light);">
                     <div style="font-size: 2rem; margin-bottom: var(--space-md);">📭</div>
                     <div>No orders found matching your filters.</div>
                 </td>
@@ -255,39 +391,52 @@ function displayOrders(orders) {
         return;
     }
 
-    // Group orders by delivery day
-    const groups = {
-        'wednesday': [],
-        'sunday': [],
-        'other': []
-    };
+    const getColClass = (index) => collapsedColumns.has(index) ? 'class="collapsed-col"' : '';
 
+    const groups = {};
     orders.forEach(order => {
-        const day = order.delivery?.day || 'other';
-        if (groups[day]) groups[day].push(order);
-        else groups['other'].push(order);
+        let key = 'Other';
+        if (currentFilters.group === 'delivery') {
+            key = order.delivery?.day || 'Other';
+        } else {
+            key = getOrderTypeIdentifier(order);
+        }
+
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(order);
+    });
+
+    // Sort group keys for consistent display
+    const groupKeys = Object.keys(groups).sort((a, b) => {
+        if (currentFilters.group === 'delivery') {
+            const dayOrder = { 'wednesday': 1, 'saturday': 2, 'other': 3 };
+            return (dayOrder[a.toLowerCase()] || 4) - (dayOrder[b.toLowerCase()] || 4);
+        }
+        return a.localeCompare(b);
     });
 
     let html = '';
 
-    Object.entries(groups).forEach(([day, dayOrders]) => {
-        if (dayOrders.length === 0) return;
+    groupKeys.forEach(key => {
+        const groupOrders = groups[key];
+        if (groupOrders.length === 0) return;
+
+        const label = currentFilters.group === 'delivery' ? `Delivery: ${key.toUpperCase()}` : `Type: ${key}`;
 
         // Header for the group
         html += `
             <tr class="group-header">
-                <td colspan="9" style="background: var(--light-cream); font-weight: 800; color: var(--text-dark); padding: var(--space-sm) var(--space-md); border-left: 5px solid var(--primary-orange);">
-                    📦 Delivery: ${day.toUpperCase()} (${dayOrders.length})
+                <td colspan="10" style="background: var(--light-cream); font-weight: 800; color: var(--text-dark); padding: var(--space-sm) var(--space-md); border-left: 5px solid var(--primary-orange);">
+                    📦 ${label} (${groupOrders.length})
                 </td>
             </tr>
         `;
 
-        dayOrders.forEach(order => {
+        groupOrders.forEach(order => {
             // Format items summary
-            const itemCount = (order.items || []).length;
-            const itemsSummary = itemCount > 0
-                ? `${order.items[0].springRolls}SR + ${order.items[0].samosas}S ${itemCount > 1 ? `(+${itemCount - 1} more)` : ''}`
-                : 'No items';
+            const itemsSummary = (order.items || []).map(item =>
+                `${item.springRolls}SR + ${item.samosas}S (${item.categoryName})`
+            ).join(' | ');
 
             // Payment logic
             const paymentStatus = order.payment?.status || 'unpaid';
@@ -305,44 +454,63 @@ function displayOrders(orders) {
             const paymentMethodIcon = isDigital ? '📱' : '💵';
 
             // Order status logic
-            const status = order.status || 'pending';
-            const statusBadgeClass = status;
+            let displayStatus = order.status || 'pending';
+            if (displayStatus === 'pending' && !isDigital) {
+                displayStatus = 'confirmed';
+            }
+            const statusBadgeClass = displayStatus;
 
             // Location
             const location = order.customer?.location || {};
             const locationText = `${location.hostel || 'Unknown'}, R${location.room || 'N/A'}`;
 
+            // Date & Time Ordered
+            const orderDateObj = order.createdAt?.toDate ? order.createdAt.toDate() : new Date();
+            const timeStr = orderDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = orderDateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            const dateTimeDisplay = `${dateStr}, ${timeStr}`;
+
+            const actionButtonsHtml = `
+                <button class="action-btn btn-manage" onclick="openOrderModal('${order.id}')">Manage</button>
+                <!-- DELETE_START -->
+                <!-- <button class="action-btn btn-cancel" style="background: var(--accent-red); color: white;" onclick="deleteOrder('${order.id}')">Delete</button> -->
+                <!-- DELETE_END -->
+            `;
+
             html += `
-                <tr class="order-row ${status === 'pending' ? 'new-order' : ''}">
-                    <td>
-                        <span class="order-id" style="font-weight: 700; color: var(--text-dark);">${order.orderNumber || order.id.substring(0, 8)}</span>
+                <tr class="order-row ${displayStatus === 'pending' ? 'new-order' : ''}">
+                    <td ${getColClass(1)}>
+                        ${actionButtonsHtml}
                     </td>
-                    <td>
+                    <td ${getColClass(2)}>
                         <strong>${order.customer?.name || 'Unknown'}</strong>
                     </td>
-                    <td>
-                        <a href="tel:${order.customer?.phone || ''}" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
-                            ${order.customer?.phone || 'N/A'}
-                        </a>
+                    <td ${getColClass(3)} style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); line-height: 1.2;">
+                        ${dateTimeDisplay}
                     </td>
-                    <td style="font-size: 0.85rem;">
-                        ${itemsSummary}
-                    </td>
-                    <td style="font-size: 0.85rem;">${locationText}</td>
-                    <td>
-                        <span style="font-weight: 600; font-size: 0.85rem;">${day.toUpperCase()}</span>
-                    </td>
-                    <td>
+                    <td ${getColClass(4)}>
                         <div style="display: flex; align-items: center; gap: 4px;">
                             <span>${paymentMethodIcon}</span>
                             <span class="status-badge ${paymentBadgeClass}" style="font-size: 0.7rem; padding: 2px 4px;">${paymentLabel}</span>
                         </div>
                     </td>
-                    <td>
-                        <span class="status-badge ${statusBadgeClass}" style="font-size: 0.75rem;">${status.toUpperCase()}</span>
+                    <td ${getColClass(5)}>
+                        <a href="tel:${order.customer?.phone || ''}" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">
+                            ${order.customer?.phone || 'N/A'}
+                        </a>
                     </td>
-                    <td>
-                        <button class="action-btn btn-manage" onclick="openOrderModal('${order.id}')">Manage</button>
+                    <td ${getColClass(6)} style="font-size: 0.85rem;">
+                        ${itemsSummary}
+                    </td>
+                    <td ${getColClass(7)} style="font-size: 0.85rem;">${locationText}</td>
+                    <td ${getColClass(8)}>
+                        <span style="font-weight: 600; font-size: 0.85rem;">${(order.delivery?.day || 'Other').toUpperCase()}</span>
+                    </td>
+                    <td ${getColClass(9)}>
+                        <span class="status-badge ${statusBadgeClass}" style="font-size: 0.75rem;">${displayStatus.toUpperCase()}</span>
+                    </td>
+                    <td ${getColClass(10)}>
+                        <span class="order-id" style="font-weight: 700; color: var(--text-dark);">${order.orderNumber || order.id.substring(0, 8)}</span>
                     </td>
                 </tr>
             `;
@@ -359,6 +527,7 @@ window.openOrderModal = function (orderId) {
 
     renderModalContent(order);
     orderModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 };
 
 // Render Modal Content based on order state
@@ -392,8 +561,22 @@ function renderModalContent(order) {
                     🔍 Verify Payment
                 </button>
             `;
+        } else if (!isDigital) {
+            // Cash Order buttons
+            if (!isPaid) {
+                actionButtons += `
+                    <button class="btn-modal" onclick="markCashAsPaid('${order.id}')" style="background: var(--success-green); color: white;">
+                        💵 Paid Cash
+                    </button>
+                `;
+            }
+            actionButtons += `
+                <button class="btn-modal" onclick="handleDeliveryClick('${order.id}', 'cash')" style="background: var(--primary-orange); color: white;">
+                    🚚 Confirm Delivered
+                </button>
+            `;
         } else {
-            // Paid MoMo or Any Cash
+            // Paid MoMo
             actionButtons += `
                 <button class="btn-modal" onclick="handleDeliveryClick('${order.id}', '${order.payment?.method}')" style="background: var(--success-green); color: white;">
                     🚚 Mark Delivered
@@ -442,7 +625,7 @@ function renderModalContent(order) {
 
         <div class="modal-section">
             <div class="modal-section-title">Order Items</div>
-            <div style="max-height: 200px; overflow-y: auto;">
+            <div>
                 ${itemsHtml}
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 2px dashed var(--light-cream);">
@@ -455,7 +638,9 @@ function renderModalContent(order) {
             <div class="modal-section-title">Current Status</div>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <span class="status-badge ${status}">${status.toUpperCase()}</span>
+                    <span class="status-badge ${status}">
+                        ${(!isDigital && status === 'pending') ? 'CASH PENDING' : status.toUpperCase()}
+                    </span>
                     <span class="status-badge ${isPaid ? 'paid' : (isDigital ? 'pending' : 'unpaid')}" style="margin-left: 5px;">
                         ${isPaid ? 'PAID' : (isDigital ? 'UNVERIFIED' : 'CASH - UNPAID')}
                     </span>
@@ -473,10 +658,32 @@ function renderModalContent(order) {
 // Handler for Delivery Button
 window.handleDeliveryClick = async function (orderId, paymentMethod) {
     if (paymentMethod === 'cash') {
-        // Default to Paid if it's Cash delivery, can be undone via Reset if needed
-        await updateDeliveryStatus(orderId, 'delivered', true);
+        const order = allOrders.find(o => o.id === orderId);
+        // On Cash orders, only change Status to Delivered. Payment is independent.
+        await updateDeliveryStatus(orderId, 'delivered', order.payment?.status === 'paid');
     } else {
         await updateDeliveryStatus(orderId, 'delivered', true);
+    }
+};
+
+// Mark Cash as Paid
+window.markCashAsPaid = async function (orderId) {
+    try {
+        await db.collection('orders').doc(orderId).update({
+            'payment.status': 'paid',
+            'payment.paidAt': firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedBy: currentAdmin.email
+        });
+
+        const orderIndex = allOrders.findIndex(o => o.id === orderId);
+        if (orderIndex > -1) {
+            allOrders[orderIndex].payment.status = 'paid';
+            renderModalContent(allOrders[orderIndex]);
+        }
+    } catch (error) {
+        console.error('Error marking cash as paid:', error);
+        alert('Failed to update payment status.');
     }
 };
 
@@ -569,27 +776,47 @@ function updateStats(orders) {
         return orderDate >= today;
     });
 
-    const pendingOrders = orders.filter(order => order.status === 'pending' || order.status === 'confirmed');
     const pendingPayments = orders.filter(order =>
         order.payment?.status !== 'paid' &&
         order.status !== 'cancelled'
     );
 
-    const paidTodayOrders = todayOrders.filter(order => order.payment?.status === 'paid');
-    const totalRevenue = paidTodayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    // Calculate Revenues based on CURRENTLY FILTERED orders
+    // So if "Today" is selected, these are Today's revenues.
+    // If "All" is selected, it's Total revenues.
+
+    // 1. Expected Revenue: All Confirmed Cash + All Successful Momo Paid
+    // Exclude cancelled orders
+    const expectedRevenueOrders = orders.filter(order => {
+        if (order.status === 'cancelled') return false;
+        const isPaid = order.payment?.status === 'paid';
+        const isCash = (order.payment?.method || 'momo').toLowerCase() === 'cash';
+        return isPaid || isCash;
+    });
+    const expectedRevenue = expectedRevenueOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+
+    // 2. Realized Revenue: ONLY Successful Paid (Momo + Cash Paid)
+    const realizedRevenueOrders = orders.filter(order => {
+        if (order.status === 'cancelled') return false;
+        return order.payment?.status === 'paid';
+    });
+    const realizedRevenue = realizedRevenueOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
 
     // Update stat elements
-    document.getElementById('stat-pending').textContent = pendingOrders.length;
+    // const statPending = document.getElementById('stat-pending'); // Removed
+    const statExpected = document.getElementById('stat-revenue-expected');
+    if (statExpected) statExpected.textContent = formatCurrency(expectedRevenue);
+
     document.getElementById('stat-today').textContent = todayOrders.length;
     document.getElementById('stat-unpaid').textContent = pendingPayments.length;
-    document.getElementById('stat-revenue').textContent = formatCurrency(totalRevenue);
+    document.getElementById('stat-revenue').textContent = formatCurrency(realizedRevenue);
 }
 
 // Show error state
 function showError(message) {
     ordersTableBody.innerHTML = `
         <tr>
-            <td colspan="9" style="text-align: center; padding: var(--space-xl); color: var(--accent-red);">
+            <td colspan="10" style="text-align: center; padding: var(--space-xl); color: var(--accent-red);">
                 <div style="font-size: 1.5rem; margin-bottom: var(--space-md);">❌</div>
                 <div>${message}</div>
             </td>
@@ -607,12 +834,12 @@ function updateKitchenSummary(orders) {
     const summaryContainer = document.getElementById('kitchen-summary-container');
     const summaryContent = document.getElementById('kitchen-summary-content');
 
-    // 1. Determine next delivery day (closest Wed or Sun)
+    // 1. Determine next delivery day (closest Wed or Sat)
     const today = new Date();
     const day = today.getDay(); // 0-6 (Sun-Sat)
 
-    // If today is Mon-Wed, next is Wed. If Thu-Sun, next is Sun.
-    let nextDay = (day >= 1 && day <= 3) ? 'wednesday' : 'sunday';
+    // If today is Sun-Wed (0-3), next is Wed. If Thu-Sat (4-6), next is Sat.
+    let nextDay = (day >= 0 && day <= 3) ? 'wednesday' : 'saturday';
 
     // Filter active orders for the next delivery day
     const activeOrders = orders.filter(o =>
@@ -627,20 +854,31 @@ function updateKitchenSummary(orders) {
 
     summaryContainer.classList.remove('hidden');
 
-    // Count totals
+    // Filter title to show which day we are prepped for
+    const summaryTitle = summaryContainer.querySelector('h3');
+    if (summaryTitle) {
+        summaryTitle.textContent = `🍳 Kitchen Prep: ${nextDay.toUpperCase()} (${activeOrders.length} Orders)`;
+    }
+
+    // Count totals AND specific combinations
     let totals = {
-        regular: { sr: 0, s: 0, count: 0 },
-        meat_crunch_10: { sr: 0, s: 0, count: 0 },
-        meat_crunch_7: { sr: 0, s: 0, count: 0 }
+        regular: { sr: 0, s: 0, count: 0, combinations: {} },
+        meat_crunch_10: { sr: 0, s: 0, count: 0, combinations: {} },
+        meat_crunch_7: { sr: 0, s: 0, count: 0, combinations: {} }
     };
 
     activeOrders.forEach(order => {
         order.items.forEach(item => {
             const cat = item.category;
             if (totals[cat]) {
-                totals[cat].sr += (item.springRolls || 0);
-                totals[cat].s += (item.samosas || 0);
+                const sr = item.springRolls || 0;
+                const s = item.samosas || 0;
+                totals[cat].sr += sr;
+                totals[cat].s += s;
                 totals[cat].count++;
+
+                const comboKey = `${sr}SR + ${s}S`;
+                totals[cat].combinations[comboKey] = (totals[cat].combinations[comboKey] || 0) + 1;
             }
         });
     });
@@ -648,17 +886,99 @@ function updateKitchenSummary(orders) {
     summaryContent.innerHTML = Object.entries(totals)
         .filter(([_, data]) => data.sr + data.s > 0)
         .map(([cat, data]) => {
-            const name = PRODUCTS[cat]?.name || cat;
-            return `
-                <div class="stat-card" style="padding: var(--space-md); text-align: left; border-left: 4px solid var(--primary-orange);">
-                    <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">${name}</div>
-                    <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary-orange);">
-                        ${data.sr} SR / ${data.s} S
+            const productInfo = PRODUCTS[cat] || { name: cat };
+            const combosHtml = Object.entries(data.combinations)
+                .sort((a, b) => b[1] - a[1]) // Sort by frequency
+                .map(([combo, count]) => `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 5px; padding: 4px; background: rgba(0,0,0,0.02); border-radius: 4px;">
+                        <span style="font-weight: 500;">${combo}</span>
+                        <span style="font-weight: 800; color: var(--primary-orange);">x${count}</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase;">
-                        From ${data.count} ${data.count === 1 ? 'order' : 'orders'}
+                `).join('');
+
+            return `
+                <div class="stat-card" style="padding: var(--space-md); text-align: left; border-left: 5px solid var(--primary-orange); display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-weight: 800; color: var(--text-dark); font-size: 1.1rem;">${productInfo.name}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-light); text-transform: uppercase;">${productInfo.subtitle || ''}</div>
+                        </div>
+                        <span style="font-size: 0.75rem; background: var(--light-cream); color: var(--primary-orange); padding: 2px 8px; border-radius: 10px; font-weight: 700;">${data.count} packs</span>
+                    </div>
+                    
+                    <div style="background: var(--gradient-warm); color: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.35rem; font-weight: 900; letter-spacing: 1px;">
+                            ${data.sr} SR / ${data.s} S
+                        </div>
+                        <div style="font-size: 0.65rem; text-transform: uppercase; font-weight: 600; opacity: 0.9;">Total Pieces Required</div>
+                    </div>
+
+                    <div style="margin-top: 5px;">
+                        <div style="font-size: 0.65rem; color: var(--text-light); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 4px;">Splits Breakdown</div>
+                        <div style="max-height: 150px; overflow-y: auto; padding-right: 4px;">
+                            ${combosHtml}
+                        </div>
                     </div>
                 </div>
             `;
         }).join('');
+}
+
+// Quick Delete for Development (Hide/Comment this before deployment)
+window.deleteOrder = async function (orderId) {
+    if (!confirm('Are you absolutely sure you want to PERMANENTLY delete this order? This cannot be undone.')) {
+        return;
+    }
+
+    try {
+        await db.collection('orders').doc(orderId).delete();
+        // The listener will automatically remove it from the UI
+        console.log(`Order ${orderId} deleted successfully`);
+    } catch (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete order: ' + error.message);
+    }
+};
+
+// Export orders to CSV
+function exportToCSV() {
+    if (allOrders.length === 0) {
+        alert('No orders to export');
+        return;
+    }
+
+    const filtered = filterOrders(allOrders);
+    if (filtered.length === 0) {
+        alert('No filtered orders to export');
+        return;
+    }
+
+    const headers = ['Order #', 'Customer', 'Phone', 'Items', 'Amount', 'Location', 'Delivery', 'Payment Status', 'Order Status', 'Date'];
+    const rows = filtered.map(order => [
+        order.orderNumber || order.id.substring(0, 8),
+        order.customer?.name || 'N/A',
+        order.customer?.phone || 'N/A',
+        (order.items || []).map(i => `${i.springRolls}SR+${i.samosas}S`).join('; '),
+        order.totalAmount || 0,
+        `${order.customer?.location?.hostel || 'N/A'}, R${order.customer?.location?.room || 'N/A'}`,
+        order.delivery?.day || 'N/A',
+        order.payment?.status || 'unpaid',
+        order.status || 'pending',
+        order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : 'N/A'
+    ]);
+
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

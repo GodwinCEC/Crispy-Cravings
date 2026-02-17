@@ -1,138 +1,359 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Crispy Cravings</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="manifest" href="images/site.webmanifest">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="images/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="images/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="images/favicon-16x16.png"
+    />
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <link rel="manifest" href="images/site.webmanifest" />
+  </head>
+  <body>
     <!-- Admin Header -->
     <header class="admin-header">
-        <div class="admin-header-content">
-            <h1 class="admin-title">📊 Admin Dashboard</h1>
-            <div class="admin-info">
-                <span id="admin-email" style="font-size: 0.9rem; opacity: 0.9;">Loading...</span>
-                <button id="logout-btn" class="logout-btn">🚪 Logout</button>
-            </div>
+      <div class="admin-header-content">
+        <h1 class="admin-title">📊 Admin Dashboard</h1>
+        <div class="admin-info">
+          <span id="admin-email" style="font-size: 0.9rem; opacity: 0.9"
+            >Loading...</span
+          >
+          <button id="logout-btn" class="logout-btn">🚪 Logout</button>
         </div>
+      </div>
     </header>
 
     <!-- Main Content -->
     <main class="admin-container">
-        <!-- Settings Card -->
-        <div class="settings-card">
-            <h3>🏪 Store Status</h3>
-            <div class="toggle-container">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="restaurant-open">
-                    <span class="toggle-slider"></span>
-                </label>
-                <span id="store-status-text">Store is closed</span>
-            </div>
+      <!-- Settings Card -->
+      <div class="settings-card">
+        <h3>🏪 Store Status</h3>
+        <div class="toggle-container">
+          <label class="toggle-switch">
+            <input type="checkbox" id="restaurant-open" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span id="store-status-text">Store is closed</span>
         </div>
+      </div>
 
-        <!-- Kitchen Summary (Action Oriented) -->
-        <div id="kitchen-summary-container" class="settings-card hidden">
-            <h3>🍳 Kitchen Prep List (Next Delivery)</h3>
-            <div id="kitchen-summary-content" class="stats-grid" style="margin-bottom: 0;">
-                <!-- Summary items will be rendered here -->
-            </div>
+      <!-- Kitchen Summary (Action Oriented) -->
+      <div id="kitchen-summary-container" class="settings-card hidden">
+        <h3>🍳 Kitchen Prep List (Next Delivery)</h3>
+        <div
+          id="kitchen-summary-content"
+          class="stats-grid"
+          style="margin-bottom: 0"
+        >
+          <!-- Summary items will be rendered here -->
         </div>
+      </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid" id="stats-container">
-            <div class="stat-card">
-                <div class="stat-value" id="stat-pending">0</div>
-                <div class="stat-label">Pending Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-today">0</div>
-                <div class="stat-label">Today's Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-unpaid">0</div>
-                <div class="stat-label">Pending Payments</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-revenue">GH₵0</div>
-                <div class="stat-label">Today's Revenue</div>
-            </div>
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="stats-container">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-revenue-expected">GH₵0</div>
+          <div class="stat-label">Expected Revenue</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-today">0</div>
+          <div class="stat-label">Today's Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-unpaid">0</div>
+          <div class="stat-label">Pending Payments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-revenue">GH₵0</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+      </div>
 
-        <!-- Filter Bar -->
-        <div class="filter-bar">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-main">
+          <div class="filter-group">
+            <span class="filter-label">Search:</span>
+            <div class="search-container">
+              <input
+                type="text"
+                id="order-search"
+                placeholder="Name, phone or ID..."
+                class="search-input"
+              />
+              <span class="search-icon">🔍</span>
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Time:</span>
+            <div class="filter-buttons">
+              <button
+                class="filter-btn active"
+                data-filter="time"
+                data-value="all"
+              >
+                All
+              </button>
+              <button class="filter-btn" data-filter="time" data-value="today">
+                Today
+              </button>
+              <button class="filter-btn" data-filter="time" data-value="week">
+                Past Week
+              </button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Status:</span>
+            <div class="filter-buttons">
+              <button
+                class="filter-btn active"
+                data-filter="status"
+                data-value="all"
+              >
+                All
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="status"
+                data-value="confirmed"
+              >
+                Confirmed
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="status"
+                data-value="delivered"
+              >
+                Delivered
+              </button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Payment:</span>
+            <div class="filter-buttons">
+              <button
+                class="filter-btn active"
+                data-filter="payment"
+                data-value="all"
+              >
+                All
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="payment"
+                data-value="paid"
+              >
+                Paid
+              </button>
+              <!-- <button
+                class="filter-btn"
+                data-filter="payment"
+                data-value="verified"
+              >
+                Verified
+              </button> -->
+              <button
+                class="filter-btn"
+                data-filter="payment"
+                data-value="unpaid"
+              >
+                Unpaid
+              </button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Delivery:</span>
+            <div class="filter-buttons">
+              <button
+                class="filter-btn active"
+                data-filter="delivery"
+                data-value="all"
+              >
+                All
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="delivery"
+                data-value="wednesday"
+              >
+                Wed
+              </button>
+              <button
+                class="filter-btn"
+                data-filter="delivery"
+                data-value="saturday"
+              >
+                Sat
+              </button>
+            </div>
             <div class="filter-group">
-                <span class="filter-label">Status:</span>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="status" data-value="all">All</button>
-                    <button class="filter-btn" data-filter="status" data-value="pending">New</button>
-                    <button class="filter-btn" data-filter="status" data-value="confirmed">Confirmed</button>
-                    <button class="filter-btn" data-filter="status" data-value="delivered">Delivered</button>
-                </div>
+              <span class="filter-label">Sort By:</span>
+              <div class="filter-buttons">
+                <button
+                  class="filter-btn active"
+                  data-filter="sort"
+                  data-value="newest"
+                >
+                  Newest
+                </button>
+                <button
+                  class="filter-btn"
+                  data-filter="sort"
+                  data-value="oldest"
+                >
+                  Oldest
+                </button>
+                <button class="filter-btn" data-filter="sort" data-value="name">
+                  Name
+                </button>
+              </div>
             </div>
             <div class="filter-group">
-                <span class="filter-label">Payment:</span>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="payment" data-value="all">All</button>
-                    <button class="filter-btn" data-filter="payment" data-value="paid">Paid</button>
-                    <button class="filter-btn" data-filter="payment" data-value="unpaid">Unpaid</button>
-                </div>
+              <span class="filter-label">Group By:</span>
+              <div class="filter-buttons">
+                <button
+                  class="filter-btn active"
+                  data-filter="group"
+                  data-value="delivery"
+                >
+                  Delivery
+                </button>
+                <button
+                  class="filter-btn"
+                  data-filter="group"
+                  data-value="type"
+                >
+                  Order Type
+                </button>
+              </div>
             </div>
-            <div class="filter-group">
-                <span class="filter-label">Delivery:</span>
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="delivery" data-value="all">All</button>
-                    <button class="filter-btn" data-filter="delivery" data-value="wednesday">Wed</button>
-                    <button class="filter-btn" data-filter="delivery" data-value="sunday">Sun</button>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="filter-actions">
+          <button
+            id="export-btn"
+            class="action-btn btn-paid"
+            style="margin: 0; padding: 10px 15px"
+          >
+            📊 Export CSV
+          </button>
+          <button
+            id="refresh-btn"
+            class="action-btn btn-manage"
+            style="margin: 0; padding: 10px 15px"
+          >
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
 
-        <!-- Orders Table -->
+      <!-- Orders Table -->
+      <div class="orders-table-wrapper">
         <div class="orders-table-container">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Phone</th>
-                        <th>Items</th>
-                        <th>Location</th>
-                        <th>Delivery</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-table-body">
-                    <!-- Orders will be rendered here -->
-                </tbody>
-            </table>
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th title="Click to collapse/expand">
+                  <div>🛠️ <span>Action</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>👤 <span>Customer</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>📅 <span>Date/Time</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>💳 <span>Payment</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>📞 <span>Phone</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>🍱 <span>Items</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>📍 <span>Location</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>🚚 <span>Delivery</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>🚦 <span>Status</span></div>
+                </th>
+                <th title="Click to collapse/expand">
+                  <div>🆔 <span>Order ID</span></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <!-- Orders will be rendered here -->
+            </tbody>
+          </table>
         </div>
+        <div class="scroll-hint">↔️ Scroll horizontally to see more</div>
+      </div>
 
-        <div class="text-center mt-lg" style="margin-top: var(--space-xl); padding: var(--space-lg); border-top: 1px solid #eee;">
-            <p class="footer-dev" style="font-size: 1rem; opacity: 1; margin-bottom: var(--space-xs); text-align: center;">Developed by <span style="color: var(--primary-orange);">Godwin Mawulikplim</span></p>
-            <a href="index.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600; display: block; margin-top: var(--space-sm);">← Back to Store</a>
-        </div>
+      <div
+        class="text-center mt-lg"
+        style="
+          margin-top: var(--space-xl);
+          padding: var(--space-lg);
+          border-top: 1px solid #eee;
+        "
+      >
+        <p
+          class="footer-dev"
+          style="
+            font-size: 1rem;
+            opacity: 1;
+            margin-bottom: var(--space-xs);
+            text-align: center;
+          "
+        >
+          Developed by
+          <span style="color: var(--primary-orange)">Godwin Mawulikplim</span>
+        </p>
+        <a
+          href="index.html"
+          style="
+            color: var(--primary-orange);
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            margin-top: var(--space-sm);
+          "
+          >← Back to Store</a
+        >
+      </div>
     </main>
 
     <!-- Order Details Modal -->
     <div id="order-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-order-number">Order Details</h2>
-                <span class="close-modal" id="close-modal">&times;</span>
-            </div>
-            <div id="modal-body">
-                <!-- Dynamically populated -->
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-order-number">Order Details</h2>
+          <span class="close-modal" id="close-modal">&times;</span>
         </div>
+        <div id="modal-body">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -142,7 +363,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
 
     <!-- Admin Script -->
-    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-config.js?v=2.0"></script>
     <script src="js/admin.js"></script>
-</body>
+  </body>
 </html>

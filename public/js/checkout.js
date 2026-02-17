@@ -27,7 +27,7 @@ function renderOrderSummary() {
 
     summaryContainer.innerHTML = items.map(item => `
         <div class="order-summary-item">
-            <span>${item.categoryName} (${item.subtitle})</span>
+            <span>${PRODUCTS[item.category]?.name || item.categoryName} (${PRODUCTS[item.category]?.subtitle || item.subtitle})</span>
             <span>${formatCurrency(item.price)}</span>
         </div>
         <div class="order-summary-item" style="font-size: 0.8rem; color: var(--text-light);">
@@ -48,17 +48,17 @@ function renderOrderSummary() {
 // Set delivery dates
 function setDeliveryDates() {
     const wednesdayEl = document.getElementById('wednesday-date');
-    const sundayEl = document.getElementById('sunday-date');
+    const saturdayEl = document.getElementById('saturday-date');
 
     wednesdayEl.textContent = formatDeliveryDate('wednesday');
-    sundayEl.textContent = formatDeliveryDate('sunday');
+    saturdayEl.textContent = formatDeliveryDate('saturday');
 
     // Auto-select the nearest delivery day
     const today = new Date().getDay();
-    if (today <= 3) { // Sunday to Wednesday
+    if (today > 0 && today <= 3) { // Monday to Wednesday
         document.getElementById('delivery-wednesday').checked = true;
     } else {
-        document.getElementById('delivery-sunday').checked = true;
+        document.getElementById('delivery-saturday').checked = true;
     }
 }
 
